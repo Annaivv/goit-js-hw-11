@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Notify } from 'notiflix';
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '30900325-2c40b95e1611f9496716f72a9&q';
 
@@ -13,7 +14,6 @@ export default class ImageApiService {
     return axios.get(url).then(data => {
       this.page += 1;
       return data.data.hits;
-      console.log(data.data.hits);
     });
   }
 
