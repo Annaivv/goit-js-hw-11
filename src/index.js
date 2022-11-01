@@ -1,6 +1,6 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import ImageApiService from './api-service/image-api';
-import axios from 'axios';
+import LoadMoreBtn from './js/load-more-btn';
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '30900325-2c40b95e1611f9496716f72a9&q';
@@ -9,13 +9,15 @@ const refs = {
   form: document.querySelector('.search-form'),
   input: document.querySelector('.input'),
   searchBtn: document.querySelector('.submit-btn'),
-  loadMoreBtn: document.querySelector('.load-more'),
+  //   loadMoreBtn: document.querySelector('.load-more'),
   gallery: document.querySelector('.gallery'),
 };
 
-refs.form.addEventListener('submit', onSearch);
-refs.loadMoreBtn.addEventListener('click', onLoadMore);
+const loadMoreBtn = new LoadMoreBtn({ selector: '.load-more', hidden: true });
 const imageApiService = new ImageApiService();
+
+refs.form.addEventListener('submit', onSearch);
+loadMoreBtn.refs.button.addEventListener('click', fetchingImages);
 
 function onSearch(e) {
   e.preventDefault();
@@ -25,19 +27,12 @@ function onSearch(e) {
   if (imageApiService.query === '') {
     return Notify.failure('Please type something');
   }
-  imageApiService.resetPage();
-  imageApiService
-    .fetchImages()
-    .then(createGalleryMarkup)
-    .then(enableLoadMoreBtn);
-  e.currentTarget.reset();
-}
 
-function onLoadMore() {
-  imageApiService
-    .fetchImages()
-    .then(createGalleryMarkup)
-    .then(enableLoadMoreBtn);
+  loadMoreBtn.show();
+  imageApiService.resetPage();
+  fetchingImages();
+
+  e.currentTarget.reset();
 }
 
 function createGalleryMarkup(images) {
@@ -74,19 +69,21 @@ function createGalleryMarkup(images) {
   } else {
     refs.gallery.innerHTML = markup;
   }
-  if (images.length !== 40) {
-    refs.loadMoreBtn.classList.add('is-hidden');
-    return Notify.failure(
-      'We are sorry, but you have reached the end of search results.'
-    );
-  }
 }
 
 function clearGallery() {
   refs.gallery.innerHTML = '';
 }
 
-function enableLoadMoreBtn() {
-  refs.loadMoreBtn.disabled = false;
-  refs.loadMoreBtn.classList.remove('is-hidden');
+function fetchingImages() {
+  loadMoreBtn.disable();
+  imageApiService.fetchImages().then(images => {
+    createGalleryMarkup(images);
+    console.log(images.length);
+    if (images.length < 40) {
+      loadMoreBtn.hide();
+    } else {
+      loadMoreBtn.enable();
+    }
+  });
 }
