@@ -15,10 +15,13 @@ export default class ImageApiService {
     try {
       const data = await axios.get(url);
       this.totalPage = Math.ceil(data.data.totalHits / 40);
-      if (this.totalPage <= this.page) {
+      if (this.totalPage <= this.page && data.data.totalHits !== 0) {
         Notify.warning(
           "We're sorry, but you've reached the end of search results."
         );
+      }
+      if (this.page === 1 && data.data.totalHits !== 0) {
+        Notify.info(`Hooray! We found ${data.data.totalHits} images.`);
       }
       this.page += 1;
       return data.data.hits;

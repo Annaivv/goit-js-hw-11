@@ -2,14 +2,10 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import ImageApiService from './api-service/image-api';
 import LoadMoreBtn from './js/load-more-btn';
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '30900325-2c40b95e1611f9496716f72a9&q';
-
 const refs = {
   form: document.querySelector('.search-form'),
   input: document.querySelector('.input'),
   searchBtn: document.querySelector('.submit-btn'),
-  //   loadMoreBtn: document.querySelector('.load-more'),
   gallery: document.querySelector('.gallery'),
 };
 
@@ -39,7 +35,7 @@ function createGalleryMarkup(images) {
   const markup = images
     .map(image => {
       return `<div class="photo-card">
-      <a class="gallery__item" >
+      <a class="gallery__item" href="${image.largeImageURL}">
   <img class="gallery__image" src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
    </a>
   <div class="info">
@@ -59,7 +55,9 @@ function createGalleryMarkup(images) {
  
 </div>`;
     })
+
     .join('');
+
   if (images.length === 0) {
     refs.gallery.innerHTML = '';
 
@@ -67,7 +65,7 @@ function createGalleryMarkup(images) {
       'Sorry, there are no images matching your search query. Please try again.'
     );
   } else {
-    refs.gallery.innerHTML = markup;
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
   }
 }
 
@@ -79,7 +77,6 @@ function fetchingImages() {
   loadMoreBtn.disable();
   imageApiService.fetchImages().then(images => {
     createGalleryMarkup(images);
-    console.log(images.length);
     if (images.length < 40) {
       loadMoreBtn.hide();
     } else {

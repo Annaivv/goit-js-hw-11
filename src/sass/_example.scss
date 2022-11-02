@@ -32,7 +32,26 @@ button {
   display: none;
 }
 
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .photo-card {
   max-width: 640px;
   margin: 0 auto;
+  width: 100%;
+
+  @media screen and (min-width: 400px) and (max-width: 799px) {
+    width: calc((100% - 10px) / 2);
+  }
+  @media screen and (min-width: 800px) {
+    width: calc((100% - 30px) / 4);
+  }
+}
+
+.gallery__image {
+  width: 100%;
+  height: 220px;
 }
