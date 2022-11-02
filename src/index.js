@@ -77,10 +77,10 @@ function fetchingImages() {
   loadMoreBtn.disable();
   imageApiService.fetchImages().then(images => {
     createGalleryMarkup(images);
-    if (images.length < 40) {
-      loadMoreBtn.hide();
-    } else {
+    if (images.length === 40) {
       loadMoreBtn.enable();
+    } else {
+      loadMoreBtn.hide();
     }
   });
 }
